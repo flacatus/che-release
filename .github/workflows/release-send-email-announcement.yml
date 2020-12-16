@@ -1,0 +1,45 @@
+# This Workflow performs a full release of Che
+name: Release - Send email announcement
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The version that is going to be released. Should be in format 7.y.z'
+        required: true
+        default: '7.y.z'
+      recipients: 
+        description: 'The email addresses (comma-separated) to which to send mail, eg., che-dev@eclipse.org'
+        required: true
+        default: 'dev@null.org.co.uk.com.ca'
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Setup env vars
+        id: ENVS
+        run: |
+          echo "::set-output name=base_version::${version%.*}" 
+      # see https://github.com/marketplace/actions/send-email
+      - name: Send mail
+        uses: dawidd6/action-send-mail@v2
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          # TODO: do we need these?
+          #username: ${{secrets.MAIL_USERNAME}}
+          #password: ${{secrets.MAIL_PASSWORD}}
+          subject: Che ${{ github.event.inputs.version }} is live! Please resolve or move your ${{ steps.ENVS.outputs.base_version }} milestone issues
+          # Literal body:
+          body: |
+            Che ${{ github.event.inputs.version }} has been released.
+
+            Please, resolve or move the issues assigned to this milestone:
+            
+            https://github.com/eclipse/che/milestones/${{ steps.ENVS.outputs.base_version }}
+          
+          to: ${{ github.event.inputs.recipients }}
+          from: nboldt@redhat.com
+          # Optional content type (defaults to text/plain):
+          #content_type: text/html
+          # Optional converting Markdown to HTML (set content_type to text/html too):
+          #convert_markdown: true
