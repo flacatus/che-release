@@ -55,11 +55,6 @@ jobs:
           # want >=5
           bash --version
 
-          # want >=1.1
-          skopeo --version
-          # want >=2 
-          podman --version
-
           # do we need any of these?
           # docker-ce          x86_64  3:19.03.14-3.el7            docker-ce-stable   24 M
           # gcc-c++            x86_64  4.8.5-44.el7                base              7.2 M
