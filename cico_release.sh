@@ -60,7 +60,7 @@ installRPMDeps(){
     subscription-manager repos --enable=rhel-server-rhscl-7-rpms || true
     yum update -y -q 
     # TODO should this be node 12 module?
-    yum install -y -q git224-all skopeo java-11-openjdk-devel yum-utils device-mapper-persistent-data lvm2 docker-ce nodejs yarn gcc-c++ make jq hub python3-pip wget yq podman psmisc
+    yum install -y -q git224-all java-11-openjdk-devel yum-utils device-mapper-persistent-data lvm2 docker-ce nodejs yarn gcc-c++ make jq hub python3-pip wget yq psmisc
     echo -n "node "; node --version
     echo -n "npm "; npm --version
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
