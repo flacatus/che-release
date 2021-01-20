@@ -561,19 +561,11 @@ set -e
 
 set +x
 # only need maven for che server (5) + bumping versions in sources (6)
-if [[ ${PHASES} == *"5"* ]] || [[ ${PHASES} == *"6"* ]]; then
-    installMaven
-fi
-
-# Release Che server to Maven central (depends on dashboard and workspace loader)
-set +x
-if [[ ${PHASES} == *"5"* ]]; then
-    checkoutProjects
-    cd che
-    git checkout 7.24.1
-    mvn clean install -ntp -U -Pcodenvy-release -Dgpg.passphrase=$CHE_OSS_SONATYPE_PASSPHRASE
-fi
-
+installMaven
+checkoutProjects
+cd che
+git checkout 7.24.1
+mvn clean install -ntp -U -Pcodenvy-release -Dgpg.passphrase=$CHE_OSS_SONATYPE_PASSPHRASE
 # TODO need a test to validate docs have been published OK
 wait
 
