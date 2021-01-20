@@ -39,7 +39,7 @@ jobs:
           # install more dependencies
           sudo apt-get -y -q install wget curl bash openjdk-11-jdk-headless git 
           java -version
-          sudo alternatives --list
+          which java
           
           # want git >=2.24, hub >=2
           hub --version # hub reports git version too
