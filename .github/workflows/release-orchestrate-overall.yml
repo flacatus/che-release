@@ -1,7 +1,16 @@
 # This Workflow performs a full release of Che
 name: Release - Orchestrate Overall Release Phases
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The version that is going to be released. Should be in format 7.y.z'
+        required: true
+        default: ''
+      phases:
+        description: 'List of comma-separated phases to perform; default should be "1,2,3,4,5,6,7"; omit phases that have successfully run'
+        required: true
+        default: '1,2,3,4,5,6,7'
 jobs:
   build:
     runs-on: ubuntu-16.04

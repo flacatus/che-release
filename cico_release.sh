@@ -559,13 +559,81 @@ echo "BASH VERSION = $BASH_VERSION"
 set -e
 
 
+# Release che-theia, machine-exec and devfile-registry
+set +x
+if [[ ${PHASES} == *"1"* ]]; then
+    { ./cico_release_theia_and_registries.sh ${CHE_VERSION} eclipse/che-theia            devtools-che-theia-che-release        90 & }; pid_1=$!;
+    { ./cico_release_theia_and_registries.sh ${CHE_VERSION} eclipse/che-machine-exec     devtools-che-machine-exec-release     60 & }; pid_2=$!;
+    # TODO switch to GH action https://github.com/eclipse/che-devfile-registry/pull/309 + need secrets 
+    { ./cico_release_theia_and_registries.sh ${CHE_VERSION} eclipse/che-devfile-registry devtools-che-devfile-registry-release 75 & }; pid_3=$!;
+fi
+wait
+verifyContainerExistsWithTimeout ${REGISTRY}/${ORGANIZATION}/che-machine-exec:${CHE_VERSION} 30
+verifyContainerExistsWithTimeout ${REGISTRY}/${ORGANIZATION}/che-devfile-registry:${CHE_VERSION} 30
+verifyContainerExistsWithTimeout ${REGISTRY}/${ORGANIZATION}/che-theia-dev:${CHE_VERSION} 30
+verifyContainerExistsWithTimeout ${REGISTRY}/${ORGANIZATION}/che-theia:${CHE_VERSION} 30
+verifyContainerExistsWithTimeout ${REGISTRY}/${ORGANIZATION}/che-theia-endpoint-runtime-binary:${CHE_VERSION} 30
+
+# Release plugin-registry (depends on che-theia and machine-exec)
+set +x
+if [[ ${PHASES} == *"2"* ]]; then
+    # TODO switch to GH action https://github.com/eclipse/che-plugin-registry/pull/723 + need secrets 
+    { ./cico_release_theia_and_registries.sh ${CHE_VERSION} eclipse/che-plugin-registry  devtools-che-plugin-registry-release  45 & }; pid_4=$!;
+fi
+wait
+verifyContainerExistsWithTimeout ${REGISTRY}/${ORGANIZATION}/che-plugin-registry:${CHE_VERSION} 30
+
+# Release dashboard and workspace loader
+set +x
+if [[ ${PHASES} == *"3"* ]]; then
+    releaseDashboard
+    releaseWorkspaceLoader
+fi
+verifyContainerExistsWithTimeout ${REGISTRY}/${ORGANIZATION}/che-dashboard:${CHE_VERSION} 30
+verifyContainerExistsWithTimeout ${REGISTRY}/${ORGANIZATION}/che-workspace-loader:${CHE_VERSION} 30
+
+# Release of Che docs does not depend on server, so trigger and don't wait
+set +x
+if [[ ${PHASES} == *"4"* ]]; then
+    releaseCheDocs &
+fi
+
 set +x
 # only need maven for che server (5) + bumping versions in sources (6)
-installMaven
-checkoutProjects
-cd che
-git checkout 7.24.1
-mvn clean install -ntp -U -Pcodenvy-release -Dgpg.passphrase=$CHE_OSS_SONATYPE_PASSPHRASE
+if [[ ${PHASES} == *"5"* ]] || [[ ${PHASES} == *"6"* ]]; then
+    installMaven
+fi
+
+# Release Che server to Maven central (depends on dashboard and workspace loader)
+set +x
+if [[ ${PHASES} == *"5"* ]]; then
+    checkoutProjects
+    prepareRelease
+    createTags
+    releaseCheServer
+fi
+
+# Release Che images - see DOCKER_FILES_LOCATIONS for array of images to build
+set +x
+if [[ ${PHASES} == *"6"* ]]; then
+    buildImages  ${CHE_VERSION}
+    tagLatestImages ${CHE_VERSION}
+    pushImagesOnQuay ${CHE_VERSION} pushLatest
+    bumpVersions
+    updateImageTagsInCheServer
+
+    # verify images all created from IMAGES_LIST
+    for image in ${IMAGES_LIST[@]}; do
+        verifyContainerExistsWithTimeout ${image}:${CHE_VERSION} 30
+    done
+fi
+
+# Release Che operator (create PRs)
+set +x
+if [[ ${PHASES} == *"7"* ]]; then
+    releaseOperator
+fi
+
 # TODO need a test to validate docs have been published OK
 wait
 
