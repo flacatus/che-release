@@ -46,10 +46,19 @@ jobs:
           sudo add-apt-repository -y ppa:openjdk-r/ppa # for jdk11
           sudo apt-get update -y || true
           # install more dependencies
-          sudo apt-get -y -q install wget curl bash openjdk-11-jdk-headless git 
+          sudo apt-get -y -q install wget curl bash git 
+
+          wget "https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz"
+          sudo tar -xzvf openjdk-11.0.2_linux-x64_bin.tar.gz
+          sudo mv jdk-11.0.2 /usr/lib/jvm/
+          export JAVA_HOME="/usr/lib/jvm/jdk-11.0.2/"
+          export PATH=$JAVA_HOME/bin:$PATH
+
           java -version
           which java
-          
+          javac -version
+          which javac
+
           # want git >=2.24, hub >=2
           hub --version # hub reports git version too
 
