@@ -629,8 +629,8 @@ if [[ ${PHASES} == *"6"* ]]; then
     buildImages  ${CHE_VERSION}
     tagLatestImages ${CHE_VERSION}
     pushImagesOnQuay ${CHE_VERSION} pushLatest
-    bumpVersions
-    updateImageTagsInCheServer
+    # bumpVersions
+    # updateImageTagsInCheServer
 fi
 
 # verify images all created from IMAGES_LIST
