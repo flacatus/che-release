@@ -138,6 +138,7 @@ setupGitconfig() {
 
   # hub CLI configuration
   git config --global push.default matching
+  git config --global pull.ff only # suppress warnings about how to reconcile divergent branches
   export GITHUB_TOKEN="${CHE_BOT_GITHUB_TOKEN}"
 }
 
