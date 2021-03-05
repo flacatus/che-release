@@ -22,7 +22,7 @@ jobs:
         output: CHANGELOG-next.md
         verbose: false
         releaseBranch: master # TODO: change to main
-        dueTag: ${{ github.event.inputs.version }} # all issues up to the current release tag
+        # dueTag: ${{ github.event.inputs.version }} # all issues up to the current release tag
         filterByMilestone: false # this requires that we get good at setting milestone when something is actually DONE rather than when we think it'll be done
         pullRequests: false # only include issues, not PRs, since PRs span multiple repos and are too noisy to include
         issuesWoLabels: false # no labels? no logged change
