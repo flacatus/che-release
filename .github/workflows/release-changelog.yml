@@ -15,7 +15,7 @@ jobs:
       # wrapper for https://github.com/github-changelog-generator/github-changelog-generator
       uses: heinrichreimer/github-changelog-generator-action@v2.1.1
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.CHE_BOT_GITHUB_TOKEN }}
         repo: eclipse/che 
         project: "Eclipse Che"
         dateFormat: "%Y-%m-%d"
