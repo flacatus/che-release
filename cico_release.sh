@@ -126,7 +126,7 @@ releaseCheServer() {
 }
 
 releaseOperator() {
-    invokeAction eclipse/che-operator "Release Che Operator" "3593082" version "${CHE_VERSION}"
+    invokeAction eclipse-che/che-operator "Release Che Operator" "3593082" version "${CHE_VERSION}"
 }
 
 # TODO change it to someone else?
