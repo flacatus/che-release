@@ -97,7 +97,7 @@ invokeAction() {
 }
 
 releaseMachineExec() {
-    invokeAction eclipse/che-machine-exec "Release Che Machine Exec" "5149341" version "${CHE_VERSION}"
+    invokeAction eclipse-che/che-machine-exec "Release Che Machine Exec" "5149341" version "${CHE_VERSION}"
 }
 
 releaseCheTheia() {
